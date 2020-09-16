@@ -20,6 +20,25 @@ const listaDeProdutos = [{
     deletado: false
 }];
 
+const pedido = {
+    id: 22222,
+    produtos: [produto.listaDeProdutos],
+    estado: "Incompleto",
+    idCliente: "123",
+    deletado: false,
+    valorTotal: 0
+}
+
+const listaDePedidos = [{
+    id: 11111,
+    produtos: [],
+    estado: "Incompleto",
+    idCliente: "",
+    deletado: false,
+    valorTotal: 0
+}]
+
+
 // criar novo produto
 const adicionarProdutos = (produto) => {
     const novoProduto = {
@@ -86,21 +105,36 @@ const atualizarProduto = (id, propriedade) => {
 
 //deletar um produto
 const deletarProduto = (id) => {
-    const produto = obterProduto(id);
-    console.log(produto)
-    if (produto !== "Produto não existente!") {
-        listaDeProdutos.splice(produto.info, 1);
-        return true;
-    } else {
-        return false;
+        const produto = obterProduto(id);
+        console.log(produto)
+        if (produto !== "Produto não existente!") {
+            listaDeProdutos.splice(produto.info, 1);
+            return true;
+        } else {
+            return false;
+        }
     }
+    /**
+     * abaixo ficam as funções para "pedidos"
+     */
+
+//Obter todos os pedidos
+const obterListaDePedidos = () => {
+    const listaSemDeletados = [];
+
+    listaDePedidos.forEach(elemento => {
+        if (elemento.deletado === false) {
+            listaSemDeletados.push(elemento);
+        }
+    })
+    return listaSemDeletados;
 }
 
-server.use((ctx) => {
-    /*ctx.status = 200;
-    ctx.body = "Rodando!";*/
-    const method = ctx.method;
+const caminhos = (ctx) => {
     const path = ctx.url;
+    const method = ctx.method;
+    const pathQuebrado = path.split("/");
+
     if (path === "/products") {
         if (method === "POST") {
             ctx.status = 200;
@@ -110,7 +144,6 @@ server.use((ctx) => {
             ctx.body = obterListaDeProdutos();
         }
     } else if (path.includes("/products/")) {
-        const pathQuebrado = path.split("/");
         if (pathQuebrado[1] === "products") {
             const id = pathQuebrado[2];
             if (method === "GET") {
@@ -141,19 +174,42 @@ server.use((ctx) => {
                 ctx.body = "Não encontrado";
             }
         }
+    } else if (path === "/orders") {
+        switch (method) {
+            case "GET":
+                break;
+            case "POST":
+                break;
+            case "PUT":
+                break;
+            case "DELETE":
+                break;
+            default:
+                break;
+        }
+
+    } else if (path.includes("/orders/")) {
+        switch (method) {
+            case "GET":
+                break;
+            case "POST":
+                break;
+            case "PUT":
+                break;
+            case "DELETE":
+                break;
+            default:
+                break;
+        }
     } else {
         ctx.status = 404;
         ctx.body = "Não encontrado";
     }
+}
+
+server.use((ctx) => {
+    caminhos(ctx);
 });
 
 
 server.listen(8081, () => console.log("Rodando porta 8081!"));
-
-module.exports = {
-    adicionarProdutos: adicionarProdutos,
-    obterListaDeProdutos: obterListaDeProdutos,
-    obterProduto: obterProduto,
-    atualizarProduto: atualizarProduto,
-    deletarProduto: deletarProduto
-};
